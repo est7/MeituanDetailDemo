@@ -1,33 +1,22 @@
 package com.ziwenl.meituandemo.ui.store.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ziwenl.meituan_detail.R
+import com.ziwenl.meituan_detail.databinding.ItemShopDetailsMenuLeftBinding
 import com.ziwenl.meituandemo.bean.MenuTabBean
-import kotlinx.android.synthetic.main.item_shop_details_menu_left.view.*
 
-/**
- * PackageName : com.ziwenl.meituandemo.ui.store.adapter
- * Author : Ziwen Lan
- * Date : 2020/9/11
- * Time : 15:31
- * Introduction :
- */
 class MenuLeftAdapter(
     private val data: MutableList<MenuTabBean>
-) :
-    RecyclerView.Adapter<MenuLeftAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<MenuLeftAdapter.ViewHolder>() {
 
     var currentPosition = 0
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    class ViewHolder(val binding: ItemShopDetailsMenuLeftBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_shop_details_menu_left, parent, false)
-        return ViewHolder(view)
+        val binding = ItemShopDetailsMenuLeftBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -35,15 +24,17 @@ class MenuLeftAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.itemView.cb_name.isChecked = position == currentPosition
-        holder.itemView.cb_name.text = data[position].name
-        holder.itemView.cb_name.setOnClickListener {
-            mCallBack?.onClickItem(position)
-        }
-        holder.itemView.view_bottom.visibility = if (position == data.size - 1) {
-            View.VISIBLE
-        } else {
-            View.GONE
+        holder.binding.apply {
+            cbName.isChecked = position == currentPosition
+            cbName.text = data[position].name
+            cbName.setOnClickListener {
+                mCallBack?.onClickItem(position)
+            }
+            viewBottom.visibility = if (position == data.size - 1) {
+                ViewGroup.VISIBLE
+            } else {
+                ViewGroup.GONE
+            }
         }
     }
 

@@ -11,8 +11,12 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.drawable.DrawableCompat
 import com.ziwenl.meituan_detail.R
-import com.ziwenl.meituan_detail.utils.*
-import kotlinx.android.synthetic.main.layout_shop_details_title.view.*
+import com.ziwenl.meituan_detail.databinding.LayoutShopDetailsTitleBinding
+import com.ziwenl.meituan_detail.utils.SystemUtil
+import com.ziwenl.meituan_detail.utils.argbEvaluator
+import com.ziwenl.meituan_detail.utils.dp
+import com.ziwenl.meituan_detail.utils.resDimension
+import com.ziwenl.meituan_detail.utils.resDrawable
 
 /**
  * PackageName : com.ziwenl.meituan_detail.ui.shop
@@ -33,6 +37,7 @@ class ShopTitleLayout : ConstraintLayout {
         defStyleAttr
     )
 
+    private val binding: LayoutShopDetailsTitleBinding
 
     private val offsetMax = resDimension(R.dimen.top_min_height).toFloat()
     private val adInterpolator = AccelerateDecelerateInterpolator()
@@ -43,7 +48,7 @@ class ShopTitleLayout : ConstraintLayout {
     private val drawableMenu = resDrawable(R.mipmap.icon_menu)
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.layout_shop_details_title, this)
+        binding = LayoutShopDetailsTitleBinding.inflate(LayoutInflater.from(context), this, true)
     }
 
     private var mStatusBarIsDark = false
@@ -67,17 +72,17 @@ class ShopTitleLayout : ConstraintLayout {
         )
 
         val e: Int = argbEvaluator.evaluate(effect, Color.WHITE, 0xFF646464.toInt()) as Int
-        iv_back.setImageDrawable(tintDrawable(drawableBack, ColorStateList.valueOf(e)))
-        iv_menu.setImageDrawable(tintDrawable(drawableMenu, ColorStateList.valueOf(e)))
-        iv_collection.setImageDrawable(tintDrawable(drawableCollection, ColorStateList.valueOf(e)))
-        iv_search.setImageDrawable(tintDrawable(drawableSearch, ColorStateList.valueOf(e)))
+        binding.ivBack.setImageDrawable(tintDrawable(drawableBack, ColorStateList.valueOf(e)))
+        binding.ivMenu.setImageDrawable(tintDrawable(drawableMenu, ColorStateList.valueOf(e)))
+        binding.ivCollection.setImageDrawable(tintDrawable(drawableCollection, ColorStateList.valueOf(e)))
+        binding.ivSearch.setImageDrawable(tintDrawable(drawableSearch, ColorStateList.valueOf(e)))
 
-        iv_search.scaleX = (1 - 0.4 * effect).toFloat()
-        iv_search.scaleY = (1 - 0.4 * effect).toFloat()
-        iv_search.translationX = -(tv_search.width - iv_search.width + dp(3)) * effect
-        tv_search.alpha = effect
-        tv_search.pivotX = tv_search.width.toFloat()
-        tv_search.scaleX = (0.2 + 0.8 * effect).toFloat()
+        binding.ivSearch.scaleX = (1 - 0.4 * effect).toFloat()
+        binding.ivSearch.scaleY = (1 - 0.4 * effect).toFloat()
+        binding.ivSearch.translationX = -(binding.tvSearch.width - binding.ivSearch.width + dp(3)) * effect
+        binding.tvSearch.alpha = effect
+        binding.tvSearch.pivotX = binding.tvSearch.width.toFloat()
+        binding.tvSearch.scaleX = (0.2 + 0.8 * effect).toFloat()
 
         //根据滚动比例动态设置状态字体颜色为深色
         if ((effect >= 0.5f) != mStatusBarIsDark) {

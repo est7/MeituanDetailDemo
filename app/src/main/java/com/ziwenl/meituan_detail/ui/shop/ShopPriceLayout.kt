@@ -6,11 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.ziwenl.meituan_detail.R
+import com.ziwenl.meituan_detail.databinding.LayoutShopPriceBinding
 import com.ziwenl.meituan_detail.utils.dp
 import com.ziwenl.meituan_detail.utils.stateRefresh
 import com.ziwenl.meituan_detail.utils.stateSave
-import com.ziwenl.meituan_detail.utils.statesChangeByAnimation
-import kotlinx.android.synthetic.main.layout_shop_price.view.*
 
 /**
  * PackageName : com.ziwenl.meituan_detail.ui.shop
@@ -30,10 +29,12 @@ class ShopPriceLayout : ConstraintLayout {
         defStyleAttr
     )
 
-    private fun animViews(): Array<View> = arrayOf(cl_main)
+    private val binding: LayoutShopPriceBinding
+
+    private fun animViews(): Array<View> = arrayOf(binding.clMain)
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.layout_shop_price, this)
+        binding = LayoutShopPriceBinding.inflate(LayoutInflater.from(context), this, true)
     }
 
     private var firstLayout: Boolean = false
@@ -44,8 +45,8 @@ class ShopPriceLayout : ConstraintLayout {
         if (!firstLayout) {
             firstLayout = true
             //记录 View 状态
-            cl_main.stateSave(R.id.viewStateStart).alpha(1F)
-            cl_main.stateSave(R.id.viewStateEnd).alpha(0F)
+            binding.clMain.stateSave(R.id.viewStateStart).alpha(1F)
+            binding.clMain.stateSave(R.id.viewStateEnd).alpha(0F)
         }
     }
 
@@ -62,5 +63,4 @@ class ShopPriceLayout : ConstraintLayout {
     }
 
     private var mIsExpanded = false
-
 }

@@ -5,19 +5,19 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ziwenl.meituan_detail.R
+import com.ziwenl.meituan_detail.databinding.FragmentShopDetailsMenuBinding
 import com.ziwenl.meituan_detail.ui.shop.adapter.FloatDecoration
 import com.ziwenl.meituan_detail.widgets.CenterLayoutManager
 import com.ziwenl.meituandemo.bean.MenuChildBean
 import com.ziwenl.meituandemo.bean.MenuTabBean
 import com.ziwenl.meituandemo.ui.store.adapter.MenuLeftAdapter
 import com.ziwenl.meituandemo.ui.store.adapter.MenuRightAdapter
-import kotlinx.android.synthetic.main.fragment_shop_details_menu.*
-import kotlinx.android.synthetic.main.item_shop_details_menu_right_group.view.*
 
 
 /**
@@ -34,7 +34,10 @@ class MenuFragment : Fragment(), ScrollableViewProvider {
     private lateinit var mLayoutControl: LayoutExpandControl
     private var mIsClickFold = false
     private var mRvState = RecyclerView.State()
-    private lateinit var mLeftLayoutManager:CenterLayoutManager
+    private lateinit var mLeftLayoutManager: CenterLayoutManager
+
+    private var _binding: FragmentShopDetailsMenuBinding? = null
+    private val binding get() = _binding!!
 
     companion object {
         fun getInstance(
@@ -49,23 +52,22 @@ class MenuFragment : Fragment(), ScrollableViewProvider {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_shop_details_menu, null)
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentShopDetailsMenuBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //初始化
         mLeftAdapter = MenuLeftAdapter(mLeftData)
-        mLeftLayoutManager=CenterLayoutManager(context)
-        rv_left.layoutManager = mLeftLayoutManager
-        rv_left.adapter = mLeftAdapter
+        mLeftLayoutManager = CenterLayoutManager(requireContext())
+        binding.rvLeft.layoutManager = mLeftLayoutManager
+        binding.rvLeft.adapter = mLeftAdapter
         val rightAdapter = MenuRightAdapter(mRightData)
-        rv_right.layoutManager = LinearLayoutManager(context)
-        rv_right.adapter = rightAdapter
+        binding.rvRight.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvRight.adapter = rightAdapter
         //左边 RecyclerView item 点击事件监听
         mLeftAdapter.setCallback(object : MenuLeftAdapter.Callback {
             override fun onClickItem(position: Int) {
@@ -76,16 +78,15 @@ class MenuFragment : Fragment(), ScrollableViewProvider {
                             mLayoutControl.fold()
                             mIsClickFold = true
                         }
-                        if (rv_right.layoutParams.height != scrollView.height) {
-                            rv_right.layoutParams.height = scrollView.height
-                            rv_left.layoutParams.height = scrollView.height
-                            rv_right.layoutParams = rv_right.layoutParams
-                            rv_left.layoutParams = rv_left.layoutParams
+                        if (binding.rvRight.layoutParams.height != binding.scrollView.height) {
+                            binding.rvRight.layoutParams.height = binding.scrollView.height
+                            binding.rvLeft.layoutParams.height = binding.scrollView.height
+                            binding.rvRight.layoutParams = binding.rvRight.layoutParams
+                            binding.rvLeft.layoutParams = binding.rvLeft.layoutParams
                         }
                         //右边菜品 RecyclerView 将指定 item 滚动到可见第一条
-                        (rv_right.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
-                            i,
-                            0
+                        (binding.rvRight.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+                            i, 0
                         )
                         mLeftAdapter.currentPosition = position
                         mLeftAdapter.notifyDataSetChanged()
@@ -96,10 +97,9 @@ class MenuFragment : Fragment(), ScrollableViewProvider {
         })
 
         //右边 RecyclerView 添加悬浮吸顶装饰
-        rv_right.addItemDecoration(
-            FloatDecoration(
-                context!!,
-                rv_right,
+        binding.rvRight.addItemDecoration(
+            FloatDecoration(requireContext(),
+                binding.rvRight,
                 R.layout.item_shop_details_menu_right_group,
                 object : FloatDecoration.DecorationCallback {
                     override fun getDecorationFlag(position: Int): String {
@@ -109,27 +109,24 @@ class MenuFragment : Fragment(), ScrollableViewProvider {
 
                     override fun onBindView(decorationView: View, position: Int) {
                         //装饰 View 数据绑定
-                        decorationView.tv_group_name.text = mRightData[position].groupName
+                        decorationView.findViewById<TextView>(R.id.tv_group_name).text = mRightData[position].groupName
                     }
                 })
         )
 
         //右边 RecyclerView 滚动监听
-        rv_right.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.rvRight.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 //实现右边滚动联动左边 RecyclerView
-                val position =
-                    (rv_right.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                val position = (binding.rvRight.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                 if (mLeftData[mLeftAdapter.currentPosition].name != mRightData[position].groupName) {
                     for (i in 0 until mLeftData.size) {
                         if (mLeftData[i].name == mRightData[position].groupName) {
                             mLeftAdapter.currentPosition = i
                             mLeftAdapter.notifyDataSetChanged()
                             mLeftLayoutManager.smoothScrollToPosition(
-                                rv_left,
-                                mRvState,
-                                mLeftAdapter.currentPosition
+                                binding.rvLeft, mRvState, mLeftAdapter.currentPosition
                             )
                             break
                         }
@@ -138,11 +135,11 @@ class MenuFragment : Fragment(), ScrollableViewProvider {
             }
         })
         //根据屏幕实际宽高设置两个recyclerView高度为固定值
-        scrollView.post {
-            rv_right.layoutParams.height = scrollView.height
-            rv_left.layoutParams.height = scrollView.height
-            rv_right.layoutParams = rv_right.layoutParams
-            rv_left.layoutParams = rv_left.layoutParams
+        binding.scrollView.post {
+            binding.rvRight.layoutParams.height = binding.scrollView.height
+            binding.rvLeft.layoutParams.height = binding.scrollView.height
+            binding.rvRight.layoutParams = binding.rvRight.layoutParams
+            binding.rvLeft.layoutParams = binding.rvLeft.layoutParams
         }
 
         //记录是 rv_left 被触摸还是 rv_right 被触摸
@@ -151,31 +148,34 @@ class MenuFragment : Fragment(), ScrollableViewProvider {
                 event.action == MotionEvent.ACTION_DOWN && v.id == R.id.rv_right -> {
                     mIsTouchRvRight = true
                 }
+
                 event.action == MotionEvent.ACTION_UP && v.id == R.id.rv_right -> {
                     mIsTouchRvRight = false
                 }
+
                 event.action == MotionEvent.ACTION_DOWN && v.id == R.id.rv_left -> {
                     mIsTouchRvLeft = true
                 }
+
                 event.action == MotionEvent.ACTION_UP && v.id == R.id.rv_left -> {
                     mIsTouchRvLeft = false
                 }
             }
             false
         }
-        rv_right.setOnTouchListener(onTouchListener)
-        rv_left.setOnTouchListener(onTouchListener)
+        binding.rvRight.setOnTouchListener(onTouchListener)
+        binding.rvLeft.setOnTouchListener(onTouchListener)
         //scrollView 滚动监听
-        scrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+        binding.scrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
             val dy = scrollY - oldScrollY
             //上滑时，如果 bannerView 尚未被滚出屏幕，则不允许左右两个 RecyclerView 滚动 （通过 offsetChildrenVertical(dy) 实现两个 rv 未滚动的假象）
             if (dy > 0) {
-                if (scrollY < fl_banner.height) {
+                if (scrollY < binding.flBanner.height) {
                     if (mIsTouchRvRight) {
-                        rv_right.offsetChildrenVertical(dy)
+                        binding.rvRight.offsetChildrenVertical(dy)
                     }
                     if (mIsTouchRvLeft) {
-                        rv_left.offsetChildrenVertical(dy)
+                        binding.rvLeft.offsetChildrenVertical(dy)
                     }
                 }
             }
@@ -189,17 +189,17 @@ class MenuFragment : Fragment(), ScrollableViewProvider {
 
     override fun getScrollableView(): View {
         //如果左/右边 recyclerView 还能往上滚，则将左/右边的 recyclerView 暴露出去用来判断滑动
-        if (rv_right.canScrollVertically(-1)) {
-            return rv_right
-        } else if (rv_left.canScrollVertically(-1)) {
-            return rv_left
+        if (binding.rvRight.canScrollVertically(-1)) {
+            return binding.rvRight
+        } else if (binding.rvLeft.canScrollVertically(-1)) {
+            return binding.rvLeft
         } else {
-            return scrollView
+            return binding.scrollView
         }
     }
 
-    override fun getRootScrollView(): View? {
-        return scrollView
+    override fun getRootScrollView(): View {
+        return binding.scrollView
     }
 
     private fun getData() {
@@ -233,8 +233,8 @@ class MenuFragment : Fragment(), ScrollableViewProvider {
             mRightData.add(MenuChildBean(mLeftData.get(i).name, ""))
             mRightData.add(MenuChildBean(mLeftData.get(i).name, ""))
         }
-        rv_left.adapter?.notifyDataSetChanged()
-        rv_right.adapter?.notifyDataSetChanged()
+        binding.rvLeft.adapter?.notifyDataSetChanged()
+        binding.rvRight.adapter?.notifyDataSetChanged()
     }
 
     private fun setLayoutExpandControl(layoutExpandControl: LayoutExpandControl) {

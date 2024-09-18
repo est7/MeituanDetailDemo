@@ -19,7 +19,5 @@ class ShopDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         setContentView(R.layout.activity_shop_details)
-
-
     }
 }

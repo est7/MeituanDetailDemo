@@ -44,21 +44,21 @@
 
             <!-- 展开前布局 -->
             <include
+                android:id="@+id/widget_shop_details_discount"
                 layout="@layout/widget_shop_details_discount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/view_bg" />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <!-- 展开后布局 -->
             <include
+                android:id="@+id/widget_shop_details_discount_expanded"
                 layout="@layout/widget_shop_details_discount_expanded"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/view_bg" />
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

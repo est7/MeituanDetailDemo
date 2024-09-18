@@ -7,11 +7,10 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import com.ziwenl.meituan_detail.R
+import com.ziwenl.meituan_detail.databinding.LayoutShopDetailsContentBinding
 import com.ziwenl.meituan_detail.ui.shop.adapter.ViewPagerAdapter
 import com.ziwenl.meituandemo.ui.store.EvaluateFragment
 import com.ziwenl.meituandemo.ui.store.ShopFragment
-import kotlinx.android.synthetic.main.layout_shop_details_content.view.*
 
 /**
  * PackageName : com.ziwenl.meituan_detail.ui.shop
@@ -22,21 +21,28 @@ import kotlinx.android.synthetic.main.layout_shop_details_content.view.*
  */
 class ShopContentLayout : ConstraintLayout {
 
-    constructor(context: Context) : super(context)
+    private lateinit var binding: LayoutShopDetailsContentBinding
+    private lateinit var mFragmentList: MutableList<Fragment>
+    private var mShopContentBehavior: ShopContentBehavior? = null
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context) : super(context) {
+        init(context)
+    }
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context)
+    }
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
-    )
+    ) {
+        init(context)
+    }
 
-    private lateinit var mFragmentList: MutableList<Fragment>
-    private var mShopContentBehavior: ShopContentBehavior? = null
-
-    init {
-        LayoutInflater.from(context).inflate(R.layout.layout_shop_details_content, this)
+    private fun init(context: Context) {
+        binding = LayoutShopDetailsContentBinding.inflate(LayoutInflater.from(context), this, true)
     }
 
     override fun onFinishInflate() {
@@ -56,20 +62,20 @@ class ShopContentLayout : ConstraintLayout {
         mFragmentList.add(ShopFragment.getInstance())
         val vpAdapter =
             ViewPagerAdapter((context as AppCompatActivity).supportFragmentManager, mFragmentList)
-        vp_main.adapter = vpAdapter
-        vp_main.offscreenPageLimit = mFragmentList.size
+        binding.vpMain.adapter = vpAdapter
+        binding.vpMain.offscreenPageLimit = mFragmentList.size
 
-        tab_layout.setViewPager(vp_main, arrayOf("点菜", "评价", "商家"))
+        binding.tabLayout.setViewPager(binding.vpMain, arrayOf("点菜", "评价", "商家"))
     }
 
     fun getScrollableView(): View {
         val view =
-            (mFragmentList[vp_main.currentItem] as ScrollableViewProvider).getScrollableView()
+            (mFragmentList[binding.vpMain.currentItem] as ScrollableViewProvider).getScrollableView()
         return view
     }
 
     fun getRootScrollView(): View? {
-        return (mFragmentList[vp_main.currentItem] as ScrollableViewProvider).getRootScrollView()
+        return (mFragmentList[binding.vpMain.currentItem] as ScrollableViewProvider).getRootScrollView()
     }
 
     fun setShopContentBehavior(shopContentBehavior: ShopContentBehavior) {

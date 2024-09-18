@@ -1,12 +1,10 @@
 package com.ziwenl.meituandemo.ui.store.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ziwenl.meituan_detail.R
+import com.ziwenl.meituan_detail.databinding.ItemShopDetailsMenuRightBinding
 import com.ziwenl.meituandemo.bean.MenuChildBean
-import kotlinx.android.synthetic.main.item_shop_details_menu_right.view.*
 
 /**
  * PackageName : com.ziwenl.meituandemo.ui.store.adapter
@@ -15,13 +13,13 @@ import kotlinx.android.synthetic.main.item_shop_details_menu_right.view.*
  * Time : 16:26
  * Introduction :
  */
-class MenuRightAdapter (private val data:MutableList<MenuChildBean>) : RecyclerView.Adapter<MenuRightAdapter.ViewHolder>(){
+class MenuRightAdapter(private val data: MutableList<MenuChildBean>) : RecyclerView.Adapter<MenuRightAdapter.ViewHolder>() {
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view)
+    class ViewHolder(val binding: ItemShopDetailsMenuRightBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view= LayoutInflater.from(parent.context).inflate(R.layout.item_shop_details_menu_right,parent,false)
-        return ViewHolder(view)
+        val binding = ItemShopDetailsMenuRightBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -29,10 +27,10 @@ class MenuRightAdapter (private val data:MutableList<MenuChildBean>) : RecyclerV
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.itemView.view_bottom.visibility = if (position == data.size - 1) {
-            View.VISIBLE
+        holder.binding.viewBottom.visibility = if (position == data.size - 1) {
+            android.view.View.VISIBLE
         } else {
-            View.GONE
+            android.view.View.GONE
         }
     }
 }
